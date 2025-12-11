@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "254936162348",
+    "project_id": "ghazalapp-30589",
+    "storage_bucket": "ghazalapp-30589.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254936162348:android:c32af8ee7979a025ae7189",
+        "android_client_info": {
+          "package_name": "com.example.ghazalapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwAmZn2yzHGBozPmAfp2toAmJdwV7yjik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

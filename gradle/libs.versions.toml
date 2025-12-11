@@ -1,0 +1,83 @@
+[versions]
+agp = "8.6.1"
+andcolorpicker = "0.6.2"
+colorpicker = "0.0.15"
+colorpickerVersion = "2.3"
+colorwheel = "1.1.13"
+espressoCoreVersion = "3.7.0"
+gson = "2.13.2"
+itextg = "5.5.10"
+kavehcolorpicker = "v1.0.0"
+kotlin = "2.2.21"
+googleServices = "4.4.4"
+coreKtx = "1.17.0"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+appcompat = "1.7.1"
+paperdb = "2.7.2"
+picasso = "2.71828"
+sdpAndroid = "1.1.1"
+material = "1.13.0"
+activity = "1.12.1"
+sspAndroid = "1.1.1"
+uiTooling = "1.10.0"
+constraintlayout = "2.2.1"
+
+firebaseAuthKtx = "23.2.1"
+firebaseAuth = "24.0.1"
+firebaseDatabase = "22.0.1"
+firebaseDatabaseKtx = "21.0.0"
+firebaseFirestore = "26.0.2"
+firebaseConfig = "23.0.1"
+navigationFragmentKtx = "2.9.6"
+navigationUiKtx = "2.9.6"
+lifecycleLivedataKtx = "2.10.0"
+lifecycleViewmodelKtx = "2.10.0"
+legacySupportV4 = "1.0.0"
+recyclerview = "1.4.0"
+zoomage = "1.3.1"
+
+[libraries]
+andcolorpicker = { module = "codes.side:andcolorpicker", version.ref = "andcolorpicker" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+colorpicker = { module = "com.github.QuadFlask:colorpicker", version.ref = "colorpicker" }
+colorwheel = { module = "com.github.antonpopoff:colorwheel", version.ref = "colorwheel" }
+dhaval2404-colorpicker = { module = "com.github.Dhaval2404:ColorPicker", version.ref = "colorpickerVersion" }
+espresso-core = { module = " androidx.test.espresso:espresso-core", version.ref = "espressoCoreVersion" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+itextg = { module = "com.itextpdf:itextg", version.ref = "itextg" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+kavehcolorpicker = { module = "com.github.Mohammad3125:KavehColorPicker", version.ref = "kavehcolorpicker" }
+paperdb = { module = "io.github.pilgr:paperdb", version.ref = "paperdb" }
+picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
+sdp-android = { module = "com.intuit.sdp:sdp-android", version.ref = "sdpAndroid" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
+
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebaseConfig" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-legacy-support-v4 = { group = "androidx.legacy", name = "legacy-support-v4", version.ref = "legacySupportV4" }
+androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+ssp-android = { module = "com.intuit.ssp:ssp-android", version.ref = "sspAndroid" }
+zoomage = { module = "com.jsibbold:zoomage", version.ref = "zoomage" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+
+

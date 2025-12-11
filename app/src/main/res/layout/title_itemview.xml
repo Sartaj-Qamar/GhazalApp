@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_data_screen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/title_tv"
+        style="@style/text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_toStartOf="@+id/number_count"
+        android:paddingBottom="5dp"
+        android:text=" عنوان برائے تحقیق"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/detailtext"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:paddingBottom="5dp"
+        android:text="عنوان برائے تحقیق"
+        android:textAlignment="center"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/author"
+        style="@style/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginEnd="13dp"
+        android:layout_toStartOf="@+id/title_tv"
+        android:paddingBottom="5dp"
+        android:text="    عنوان برائے تحقیق"
+        tools:ignore="HardcodedText" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

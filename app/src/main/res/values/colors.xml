@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="gray">#B3B4B3B3</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background_color">#DBC7A5</color>
+    <color name="pdf_card_color">#EFBF7D</color>
+    <color name="unclick_color">#FFE9C1</color>
+    <color name="toolbar_color">#623900</color>
+    <color name="black">#000000</color>
+    <color name="yellow">#FFFF33</color>
+    <color name="ripple_color">#0EFFFFFF</color>
+    <color name="colorTransparent">#00000000</color>
+</resources>

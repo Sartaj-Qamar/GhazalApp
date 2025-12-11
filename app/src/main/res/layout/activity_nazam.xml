@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nazam_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".FetchDataCategoryActivity"
+    android:background="@color/background_color">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_nazam"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/toolbar_color">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/text_nazam"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="نظمیں"
+                style="@style/maintext"
+                android:gravity="center"
+
+                android:textColor="@color/white"
+                android:textSize="@dimen/_20ssp" />
+
+            <ImageView
+                android:id="@+id/back_arrow"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ripple_bottom"
+                android:src="@drawable/arrow_back_ios" />
+
+
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/detail_tittle_list"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_height="wrap_content"
+    />
+
+</LinearLayout>

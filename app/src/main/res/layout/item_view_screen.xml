@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/fragment_data_screen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background_color"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints">
+            <TextView
+                android:id="@+id/number_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:text=".0"
+                style="@style/text"
+                android:layout_alignParentEnd="true"
+                />
+
+<!--            <TextView-->
+<!--                android:id="@+id/title"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="@dimen/_8sdp"-->
+<!--                android:layout_marginEnd="@dimen/_5sdp"-->
+<!--                style="@style/text"-->
+<!--                android:layout_toStartOf="@+id/number_count"-->
+<!--                android:text="    عنوان برائے تحقیق"-->
+<!--                tools:ignore="HardcodedText" />-->
+
+
+            <TextView
+                android:id="@+id/title_tv"
+                style="@style/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="11dp"
+                android:layout_toStartOf="@+id/number_count"
+                android:paddingBottom="5dp"
+
+                android:text=" عنوان برائے تحقیق"
+                tools:ignore="HardcodedText" />
+
+
+        </RelativeLayout>
+
+    <View
+        android:id="@+id/viewLine_data"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/black" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
