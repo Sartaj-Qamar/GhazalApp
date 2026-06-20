@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_data_screen"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/bottom_toolbar_container"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/_90sdp"
         android:background="@drawable/pdf_cardbg"
         android:gravity="center"
@@ -23,54 +23,63 @@
 
 
         <RelativeLayout
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- PDF Icon at START (Left) -->
             <ImageView
-                android:id="@+id/arrowpdf_iv"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="match_parent"
+                android:id="@+id/pdf_iv"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:src="@drawable/pdf_folder"
+                android:contentDescription="PDF Icon" />
+
+            <!-- Delete Icon at END (Right) -->
+            <ImageView
+                android:id="@+id/delete_pdf"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:src="@drawable/ic_delete"
+                android:contentDescription="Delete PDF"
+                android:scaleType="centerInside" />
+
+            <!-- Folder Name Display in MIDDLE -->
+            <TextView
+                android:id="@+id/pdf_folder_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@+id/delete_pdf"
+                android:layout_toEndOf="@+id/pdf_iv"
+                android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:src="@drawable/arrow_drop_down_circle"
-                app:tint="@color/black" />
-        <ImageView
-            android:id="@+id/pdf_iv"
-            android:layout_width="@dimen/_30sdp"
-            android:layout_height="@dimen/_30sdp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/_30sdp"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_30sdp"
-            android:layout_marginTop="@dimen/_30sdp"
-            android:src="@drawable/pdf_folder" />
+                android:background="@android:color/transparent"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textAlignment="center"
+                android:hint="Folder Name"
+                android:textColorHint="@color/black"
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_5sdp"
+                tools:text="My Folder" />
 
-            <TextView
-                android:id="@+id/pdf_name"
-                style="@style/quotetext"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_toStartOf="@+id/pdf_iv"
-                android:paddingBottom="5dp"
-                android:layout_marginEnd="@dimen/_20sdp"
-
-                android:text=" عنوان برائے تحقیق"
-                android:textColor="@color/black" />
-
+            <!-- File Size Text (Hidden but available if needed) -->
             <TextView
                 android:id="@+id/pdf_size"
-                style="@style/quotetext"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/pdf_name"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="-5dp"
-                android:layout_marginEnd="@dimen/_20sdp"
-                android:layout_toStartOf="@+id/pdf_iv"
-                android:text=" عنوان برائے تحقیق"
-                android:textColor="@color/black" />
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="0 Kb"
+                android:textColor="@color/black"
+                android:textSize="10sp"
+                android:visibility="gone" />
 
         </RelativeLayout>
     </LinearLayout>

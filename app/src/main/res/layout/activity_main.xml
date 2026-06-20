@@ -8,6 +8,7 @@
     android:layout_gravity="start"
     android:background="@drawable/ic_bg"
     android:orientation="vertical"
+    android:fitsSystemWindows="false"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -26,10 +27,12 @@
 
                 <ImageView
                     android:id="@+id/toggle"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:background="@drawable/ripple_bottom"
+                    android:padding="@dimen/_2sdp"
                     android:src="@drawable/menu" />
 
                 <TextView
@@ -280,23 +283,6 @@
                     android:layout_alignParentBottom="true"
                     android:src="@drawable/frame__2_" />
             </RelativeLayout>
-
-            <!--                <TextView-->
-            <!--                    android:id="@+id/mutafariq"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:layout_marginBottom="@dimen/_9sdp"-->
-            <!--                    android:text="متفرق"-->
-            <!--                    android:textAlignment="center"-->
-            <!--                    android:textSize="@dimen/_20ssp" />-->
-
-            <!--                <ImageView-->
-            <!--                    android:id="@+id/line_6"-->
-            <!--                    android:layout_width="wrap_content"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:layout_gravity="center"-->
-            <!--                    android:layout_marginBottom="@dimen/_9sdp"-->
-            <!--                    android:src="@drawable/line_img" />-->
 
 
         </LinearLayout>

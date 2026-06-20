@@ -3,6 +3,8 @@ package com.example.ghazalapp
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ghazalapp.adapter.QuoteAdapterr
@@ -20,106 +22,90 @@ import java.io.InputStreamReader
 class FetchDataCategoryActivity : AppCompatActivity() {
 
     private var quotes: ArrayList<Quote> = ArrayList()
+    private var jsonString: String = ""
+    private lateinit var quoteAdapterr1: QuoteAdapterr
+    private lateinit var binding: ActivityNazamBinding
 
-    // Define RecyclerView and Adapter
-    var jsonString: String = ""
-
-    private lateinit var quoteAdapterr1: QuoteAdapterr // Or your custom adapter like QuoteAdapter
-    lateinit var binding: ActivityNazamBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_FULLSCREEN
+        )
 
         binding = ActivityNazamBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
         binding.detailTittleList.layoutManager = LinearLayoutManager(this)
-        if (intent.hasExtra("mainObject")) {
-            jsonString = intent.getStringExtra("mainObject").toString()
-        }
-        binding.backArrow.setOnClickListener() {
+        
+        jsonString = intent.getStringExtra("mainObject") ?: ""
+        binding.textNazam.text = jsonString
+
+        binding.backArrow.setOnClickListener {
             onBackPressed()
         }
 
-
-        val filejsonString = readFile("jsonformatter.json")
-//        Log.d("JSON", jsonString)
-//
-        //conversion from string to JSON object
-        val scope = CoroutineScope(Dispatchers.IO)
-        scope.launch() {
-            val job = launch {
-
-
-//
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val filejsonString = readFile("jsonformatter.json")
                 fetchdata(filejsonString, jsonString)
-                Log.d("size", "" + quotes.size)
-            }
-            job.invokeOnCompletion {
-                launch {
-                    CompleteCallBack()
+                withContext(Dispatchers.Main) {
+                    completeCallBack()
                 }
+            } catch (e: Exception) {
+                Log.e("FetchData", "Error loading data", e)
             }
-
         }
-
-
     }
-
 
     @SuppressLint("NotifyDataSetChanged")
-    suspend fun CompleteCallBack() {
-        withContext(Dispatchers.Main) {
+    private suspend fun completeCallBack() {
+        quoteAdapterr1 = QuoteAdapterr(
+            quotes,
+            this@FetchDataCategoryActivity, jsonString
+        )
+        binding.detailTittleList.adapter = quoteAdapterr1
+        quoteAdapterr1.notifyDataSetChanged()
+    }
 
-            quoteAdapterr1 = QuoteAdapterr(
-                quotes,
-                this@FetchDataCategoryActivity, jsonString
-            ) // Pass the data to your adapter
-            binding.detailTittleList.adapter = quoteAdapterr1
-
-            quoteAdapterr1.notifyDataSetChanged()
-            Log.d("adapter ", quoteAdapterr1.itemCount.toString())
-            Log.d("listsize ", quotes.size.toString())
+    private fun readFile(fileName: String): String {
+        return try {
+            assets.open(fileName).bufferedReader().use { it.readText() }
+        } catch (e: IOException) {
+            ""
         }
     }
 
-
-    //first you need to read the json file from assets
-    @Throws(IOException::class)
-    fun readFile(fileName: String): String {
-        val reader: BufferedReader =
-            BufferedReader(InputStreamReader(assets.open(fileName), "UTF-8"))
-        val content = StringBuilder()
-        var line: String?
-
-        while (reader.readLine().also { line = it } != null) {
-            content.append(line)
-        }
-
-        return content.toString()
-    }
-
-    fun fetchdata(filetext: String, type: String) {
-        Log.d("tag22", type)
-        val obj = JSONObject(filetext)
-        val mquotes = obj.getJSONObject(type)
-        val qatatkey = mquotes.keys()
-        while (qatatkey.hasNext()) {
-            val key = qatatkey.next()
-
-            val quoteObject = mquotes.getJSONObject(key)
-//            Log.d("tag23",)
-            //Extract the title for each quote object (assuming the key exists)
-            val title = quoteObject.getString("title")
-            binding.textNazam.text = type
-            val id = quoteObject.getString("id")
-//            // Add the Quote object (with an ID, and empty string for other fields) to the list
-            quotes.add(Quote(id, "", "", title))
+    private fun fetchdata(filetext: String, type: String) {
+        if (filetext.isEmpty() || type.isEmpty()) return
+        
+        try {
+            val obj = JSONObject(filetext)
+            if (!obj.has(type)) return
+            
+            val mquotes = obj.getJSONObject(type)
+            val keys = mquotes.keys()
+            
+            val tempQuotes = ArrayList<Quote>()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                val quoteObject = mquotes.getJSONObject(key)
+                
+                val title = quoteObject.optString("title", "")
+                val id = quoteObject.optString("id", "")
+                
+                tempQuotes.add(Quote(id, "", "", title))
+            }
+            quotes.clear()
+            quotes.addAll(tempQuotes)
+        } catch (e: Exception) {
+            Log.e("FetchData", "JSON Parsing error", e)
         }
     }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-    }
-
-
 }
-

@@ -4,270 +4,255 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.graphics.pdf.PdfDocument
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
+import android.text.Layout
+import android.text.StaticLayout
+import android.text.TextPaint
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ghazalapp.adapter.TittleQuoteAdapterr
 import com.example.ghazalapp.databinding.ActivityDetailDataGhazalBinding
 import com.example.ghazalapp.quotesData.Quote
-import com.itextpdf.text.Document
-import com.itextpdf.text.DocumentException
-import com.itextpdf.text.Paragraph
-import com.itextpdf.text.pdf.PdfWriter
 import io.paperdb.Paper
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.io.BufferedReader
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStreamReader
-import kotlin.random.Random
 
 class DetailDataGhazalActivity : AppCompatActivity() {
-    lateinit var binding: ActivityDetailDataGhazalBinding
-    lateinit var quoteAdapterr: TittleQuoteAdapterr
+    private lateinit var binding: ActivityDetailDataGhazalBinding
+    private lateinit var quoteAdapterr: TittleQuoteAdapterr
     private var quotes: ArrayList<Quote> = ArrayList()
     private var addfavList: ArrayList<Quote> = ArrayList()
-    private var removefavList: ArrayList<Quote> = ArrayList()
-    var quote: String = ""
-    var id: String = ""
-    var author: String = ""
-    var titlequote: String = ""
-    var jsonString: String = ""
-    var jsonkeyString: String = ""
-    var isFavorite = true
+    
+    private var currentQuoteText: String = ""
+    private var currentId: String = ""
+    private var currentAuthor: String = ""
+    private var currentTitle: String = ""
+    
+    private var jsonCategory: String = ""
+    private var jsonKey: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        
         binding = ActivityDetailDataGhazalBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
         binding.detailghzallist.layoutManager = LinearLayoutManager(this)
         Paper.init(this)
 
-        val filejsonString = readFile("jsonformatter.json")
+        jsonCategory = intent.getStringExtra("mainObject") ?: ""
+        jsonKey = intent.getStringExtra("keyObject") ?: ""
 
-
-        if (intent.hasExtra("mainObject")) {
-            jsonString = intent.getStringExtra("mainObject").toString()
-        }
-        if (intent.hasExtra("keyObject")) {
-            jsonkeyString = intent.getStringExtra("keyObject").toString()
-        }
-
-        val scope = CoroutineScope(Dispatchers.IO)
-        scope.launch() {
-            val job = launch {
-
-
-                fetchdata(filejsonString, jsonString)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val fileContent = try {
+                assets.open("jsonformatter.json").bufferedReader().use { it.readText() }
+            } catch (e: Exception) { "" }
+            
+            fetchData(fileContent)
+            withContext(Dispatchers.Main) {
+                setupAdapter()
             }
-            job.invokeOnCompletion {
-                launch {
-                    CompleteCallBack()
-                }
-            }
+        }
 
-        }
-        binding.detailghzallist.setOnClickListener() {
-            val intent = Intent(this, QuoteViewActivity::class.java)
-            startActivity(intent)
-        }
+        setupClickListeners()
+    }
+
+    private fun setupClickListeners() {
         binding.share.setOnClickListener {
-            val shareText = Intent(Intent.ACTION_SEND)
-            shareText.type = "text/plain"
-            val dataToShare = quote
-            shareText.putExtra(Intent.EXTRA_TEXT, dataToShare)
-            startActivity(Intent.createChooser(shareText, "Share Via"))
+            if (currentQuoteText.isNotEmpty()) {
+                val intent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, currentQuoteText)
+                }
+                startActivity(Intent.createChooser(intent, "Share Via"))
+            }
         }
-        binding.copy.setOnClickListener() {
 
-            // Get system clipboard service
-            val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            val getstring = ClipData.newPlainText("", quote)
-            clipboard.setPrimaryClip(getstring)
-            Toast.makeText(this, "Text Copied", Toast.LENGTH_SHORT).show()
+        binding.copy.setOnClickListener {
+            if (currentQuoteText.isNotEmpty()) {
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Quote", currentQuoteText))
+                Toast.makeText(this, "کاپی کر لیا گیا", Toast.LENGTH_SHORT).show()
+            }
         }
-        binding.backArrow.setOnClickListener() {
-            onBackPressed()
-        }
+
+        binding.backArrow.setOnClickListener { onBackPressed() }
+
         binding.pdfIv.setOnClickListener {
-//            val file = File(this.getExternalFilesDir(null), "/PdfFiles/Abc.pdf")
-             val destPath = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "").absolutePath + "/" + "${Random.nextInt(0, 9 + 1).toString()+jsonkeyString}.pdf"
-            createPdf(quote,destPath)
-
-            Toast.makeText(this, "PDF created successfully", Toast.LENGTH_SHORT).show()
-            // Share the created PDF file
-
+            if (currentTitle.isNotEmpty()) {
+                val sanitizedTitle = currentTitle.replace(Regex("[/\\\\:*?\"<>|]"), "_")
+                val folder = File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), sanitizedTitle)
+                if (!folder.exists()) folder.mkdirs()
+                
+                val file = File(folder, "${sanitizedTitle}_${System.currentTimeMillis()}.pdf")
+                generateUrduPdf(currentQuoteText, file.absolutePath)
+            }
         }
+
         binding.favourite.setOnClickListener {
-            // New Quote that you want to add
-            val newQuote = Quote(id, quote, author, titlequote)
-
-            // Check if the new quote already exists based on 'id'
-            if (!addfavList.any { it.id == id }){
-                addfavList.add(newQuote)
-
-                binding.favouriteBottom.setColorFilter(ContextCompat.getColor(this, R.color.yellow))
-                binding.favouriteVisible.visibility = View.VISIBLE
-                binding.favouriteVisible.setColorFilter(ContextCompat.getColor(this, R.color.yellow))
-                Toast.makeText(this, "Added to Favorite", Toast.LENGTH_SHORT).show()
-
-            }else{
-                addfavList.remove(newQuote)
-                binding.favouriteBottom.setColorFilter(ContextCompat.getColor(this, R.color.white))
-                binding.favouriteVisible.visibility = View.GONE
-                binding.favouriteVisible.setColorFilter(ContextCompat.getColor(this, R.color.white))
-                Toast.makeText(this, "Removed from Favorite", Toast.LENGTH_SHORT).show()
+            val q = Quote(currentId, currentQuoteText, currentAuthor, currentTitle)
+            if (!addfavList.any { it.id == currentId }) {
+                addfavList.add(q)
+                updateFavUI(true)
+                Toast.makeText(this, "پسندیدہ میں شامل کر لیا گیا", Toast.LENGTH_SHORT).show()
+            } else {
+                addfavList.removeAll { it.id == currentId }
+                updateFavUI(false)
+                Toast.makeText(this, "پسندیدہ سے نکال دیا گیا", Toast.LENGTH_SHORT).show()
             }
             Paper.book().write("favorite", addfavList)
-
-        }
-        binding.detailghzallist.layoutManager = LinearLayoutManager(this)
-
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    suspend fun CompleteCallBack() {
-        withContext(Dispatchers.Main) {
-            quoteAdapterr = TittleQuoteAdapterr(
-                quotes,
-                this@DetailDataGhazalActivity, jsonString,
-            ) // Pass the data to your adapter
-            binding.detailghzallist.adapter = quoteAdapterr
-            quoteAdapterr.notifyDataSetChanged()
         }
     }
 
-
-    //first you need to read the json file from assets
-    @Throws(IOException::class)
-    fun readFile(fileName: String): String {
-        val reader: BufferedReader =
-            BufferedReader(InputStreamReader(assets.open(fileName), "UTF-8"))
-        val content = StringBuilder()
-        var line: String?
-
-        while (reader.readLine().also { line = it } != null) {
-            content.append(line)
-        }
-
-        return content.toString()
+    private fun updateFavUI(isFav: Boolean) {
+        val color = if (isFav) R.color.yellow else R.color.white
+        binding.favouriteBottom.setColorFilter(ContextCompat.getColor(this, color))
+        binding.favouriteVisible.visibility = if (isFav) View.VISIBLE else View.GONE
+        binding.favouriteVisible.setColorFilter(ContextCompat.getColor(this, color))
     }
 
-    fun fetchdata(filetext: String, type: String) {
-        Log.d("tag22", type)
+    private fun setupAdapter() {
+        quoteAdapterr = TittleQuoteAdapterr(quotes, this, jsonCategory)
+        binding.detailghzallist.adapter = quoteAdapterr
+    }
+
+    private fun fetchData(json: String) {
+        if (json.isEmpty()) return
         try {
-            val obj = JSONObject(filetext)
-            val mquotes = obj.getJSONObject(type)
-            val quoteObject = mquotes.getJSONObject(jsonkeyString)
-            quote = quoteObject.getString("quote")
-            titlequote = quoteObject.getString("title")
-            binding.toolbarText.text = titlequote
+            val root = JSONObject(json)
+            val category = root.getJSONObject(jsonCategory)
+            val data = category.getJSONObject(jsonKey)
+            
+            currentQuoteText = data.optString("quote", "")
+            currentTitle = data.optString("title", "")
+            currentAuthor = data.optString("author", "")
+            currentId = data.optString("id", "")
 
-            author = quoteObject.getString("author")
-            id = quoteObject.getString("id")
-            quotes.add(Quote(id, quote, author, titlequote))
-            val favList: List<Quote> = Paper.book().read("favorite") ?: emptyList()
-            addfavList.addAll(favList)
-            if (addfavList.any { it.id == id }) {
-                binding.favouriteBottom.setColorFilter(ContextCompat.getColor(this, R.color.yellow))
-                binding.favouriteVisible.visibility = View.VISIBLE
-                binding.favouriteVisible.setColorFilter(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.yellow
-                    )
-                )
-
-            } else {
-                binding.favouriteBottom.setColorFilter(ContextCompat.getColor(this, R.color.white))
-                binding.favouriteVisible.visibility = View.GONE
-                binding.favouriteVisible.setColorFilter(ContextCompat.getColor(this, R.color.white))
-
-            }
-
+            runOnUiThread { binding.toolbarText.text = currentTitle }
+            
+            quotes.clear()
+            quotes.add(Quote(currentId, currentQuoteText, currentAuthor, currentTitle))
+            
+            val favorites: List<Quote> = Paper.book().read("favorite") ?: emptyList()
+            addfavList.clear()
+            addfavList.addAll(favorites)
+            
+            runOnUiThread { updateFavUI(addfavList.any { it.id == currentId }) }
         } catch (e: Exception) {
-
-            if (intent.hasExtra("quote")) {
-                quote = intent.getStringExtra("quote").toString()
-            }
-            if (intent.hasExtra("author")) {
-                author = intent.getStringExtra("author").toString()
-            }
-            if (intent.hasExtra("title")) {
-                titlequote = intent.getStringExtra("title").toString()
-            }
-            if (intent.hasExtra("id")) {
-                id = intent.getStringExtra("id").toString()
-            }
-            binding.toolbarText.text = titlequote
-            quotes.add(Quote(id, quote, author, titlequote))
-            e.printStackTrace()
-
-            quotes.add(Quote(id, quote, author, titlequote))
-            val favList: List<Quote> = Paper.book().read("favorite") ?: emptyList()
-            addfavList.addAll(favList)
-            if (addfavList.any { it.id == id }) {
-                binding.favouriteBottom.setColorFilter(ContextCompat.getColor(this, R.color.yellow))
-                binding.favouriteVisible.visibility = View.VISIBLE
-                binding.favouriteVisible.setColorFilter(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.yellow
-                    )
-                )
-
-            } else {
-                binding.favouriteBottom.setColorFilter(ContextCompat.getColor(this, R.color.white))
-                binding.favouriteVisible.visibility = View.GONE
-                binding.favouriteVisible.setColorFilter(ContextCompat.getColor(this, R.color.white))
-
-            }
+            currentQuoteText = intent.getStringExtra("quote") ?: ""
+            currentAuthor = intent.getStringExtra("author") ?: ""
+            currentTitle = intent.getStringExtra("title") ?: ""
+            currentId = intent.getStringExtra("id") ?: ""
+            
+            runOnUiThread { binding.toolbarText.text = currentTitle }
+            quotes.clear()
+            quotes.add(Quote(currentId, currentQuoteText, currentAuthor, currentTitle))
         }
     }
-    fun createPdf(text: String, mDestFile: String) {
-        val doc = Document()
-        val outputfile: File?
+
+    private fun generateUrduPdf(content: String, path: String) {
+        val pdfDocument = PdfDocument()
+        val paint = TextPaint().apply {
+            color = Color.BLACK
+            textSize = 16f
+            typeface = try {
+                ResourcesCompat.getFont(this@DetailDataGhazalActivity, R.font.urdu_type)
+            } catch (e: Exception) { Typeface.DEFAULT }
+        }
+
+        val pageWidth = 595
+        val pageHeight = 842
+        val margin = 50f
+        val width = pageWidth - (margin * 2).toInt()
+
+        val titlePaint = TextPaint(paint).apply {
+            textSize = 24f
+            isFakeBoldText = true
+        }
+
+        val titleLayout = StaticLayout.Builder.obtain(currentTitle, 0, currentTitle.length, titlePaint, width)
+            .setAlignment(Layout.Alignment.ALIGN_CENTER).build()
+
+        val contentLayout = StaticLayout.Builder.obtain(content, 0, content.length, paint, width)
+            .setAlignment(Layout.Alignment.ALIGN_OPPOSITE).setLineSpacing(0f, 1.4f).build()
+
+        var currentLine = 0
+        var pageNumber = 1
+        val totalLines = contentLayout.lineCount
+        val footerPaint = TextPaint().apply {
+            textSize = 10f
+            color = Color.LTGRAY
+            textAlign = Paint.Align.CENTER
+        }
+
+        while (currentLine < totalLines) {
+            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber).create()
+            val page = pdfDocument.startPage(pageInfo)
+            val canvas = page.canvas
+            
+            var yOffset = margin
+            
+            if (pageNumber == 1) {
+                canvas.save()
+                canvas.translate(margin, yOffset)
+                titleLayout.draw(canvas)
+                canvas.restore()
+                yOffset += titleLayout.height + 30f
+            }
+            
+            val remainingHeight = pageHeight - margin - yOffset - 40f
+            var linesOnThisPage = 0
+            var heightOnThisPage = 0f
+            
+            while (currentLine + linesOnThisPage < totalLines) {
+                val lineHeight = contentLayout.getLineBottom(currentLine + linesOnThisPage) - 
+                                 contentLayout.getLineTop(currentLine + linesOnThisPage)
+                if (heightOnThisPage + lineHeight > remainingHeight) break
+                heightOnThisPage += lineHeight
+                linesOnThisPage++
+            }
+            
+            if (linesOnThisPage > 0) {
+                canvas.save()
+                canvas.translate(margin, yOffset)
+                val topOffset = contentLayout.getLineTop(currentLine).toFloat()
+                canvas.clipRect(0f, 0f, width.toFloat(), heightOnThisPage + 5f)
+                canvas.translate(0f, -topOffset)
+                contentLayout.draw(canvas)
+                canvas.restore()
+                currentLine += linesOnThisPage
+            }
+
+            canvas.drawText("- $pageNumber -", (pageWidth / 2f), pageHeight - 30f, footerPaint)
+            pdfDocument.finishPage(page)
+            pageNumber++
+        }
+
         try {
-            try {
-                outputfile = File(mDestFile)
-                val fOut = FileOutputStream(outputfile)
-                PdfWriter.getInstance(doc, fOut)
-                doc.open()
-                val p1 = Paragraph(quote)
-                p1.alignment = Paragraph.ALIGN_CENTER
-                doc.add(p1)
-            } catch (e: OutOfMemoryError) {
-                e.printStackTrace()
-            }
-        } catch (de: DocumentException) {
-            Log.e("PDFCreator", "DocumentException:$de")
-        } catch (e: IOException) {
-            Log.e("PDFCreator", "ioException:$e")
+            pdfDocument.writeTo(FileOutputStream(File(path)))
+            Toast.makeText(this, "پی ڈی ایف محفوظ ہو گئی", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "محفوظ کرنے میں خرابی", Toast.LENGTH_SHORT).show()
         } finally {
-            try {
-                doc.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            Log.e("PDFCreator", "ioException:$")
+            pdfDocument.close()
         }
     }
-        @Deprecated("This method has been deprecated in favor of using the\n      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.\n      The OnBackPressedDispatcher controls how back button events are dispatched\n      to one or more {@link OnBackPressedCallback} objects.")
-        override fun onBackPressed() {
-            super.onBackPressed()
-        }
-
-
-    }
-
-
-
+}

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="false"
     tools:context=".FetchDataCategoryActivity"
     android:background="@color/background_color">
 
@@ -32,11 +33,14 @@
 
             <ImageView
                 android:id="@+id/back_arrow"
-                android:layout_width="@dimen/_15sdp"
-                android:layout_height="@dimen/_12sdp"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/ripple_bottom"
-                android:src="@drawable/arrow_back_ios" />
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/arrow_back_ios"
+                android:contentDescription="Back" />
 
 
         </RelativeLayout>

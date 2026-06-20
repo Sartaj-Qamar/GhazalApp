@@ -3,62 +3,56 @@ package com.example.ghazalapp.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.ghazalapp.DetailDataGhazalActivity
 import com.example.ghazalapp.adapter.FavquoteAdapterr.ViewHolder
 import com.example.ghazalapp.databinding.FavquoteItemviewBinding
 import com.example.ghazalapp.quotesData.Quote
+import io.paperdb.Paper
 
-class FavquoteAdapterr(private val quotes: List<Quote>, val context: Context) :
-    RecyclerView.Adapter<ViewHolder>() {
-
+class FavquoteAdapterr(
+    private var quotes: List<Quote>, 
+    val context: Context,
+    private val onDelete: () -> Unit
+) : RecyclerView.Adapter<ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // Using ViewBinding to inflate the layout
-        val binding =
-            FavquoteItemviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-
-        // Return the ViewHolder with the binding
+        val binding = FavquoteItemviewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
-
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Bind data here
-        // Bind data to views
         val quote = quotes[position]
-        holder.binding.numberCount.text = "${quote.id}" // Display id
-        holder.binding.title.text = "(${quote.author})" // Display quote
-//        holder.binding.author.text = "- ${quote.author}"
-        holder.binding.titleTv.text = "${quote.title}"
-        holder.binding.favouriteBottom.setOnClickListener(){
+        holder.binding.numberCount.text = "${quote.id}"
+        holder.binding.title.text = "(${quote.author})"
+        holder.binding.titleTv.text = quote.title
 
+        // Remove from Favorites logic
+        holder.binding.favouriteBottom.setOnClickListener {
+            val currentFavs: MutableList<Quote> = Paper.book().read<MutableList<Quote>>("favorite") ?: mutableListOf()
+            currentFavs.removeAll { it.id == quote.id }
+            Paper.book().write("favorite", currentFavs)
+            
+            Toast.makeText(context, "Removed from Favorites", Toast.LENGTH_SHORT).show()
+            onDelete() // Refresh activity
         }
-        // Display author
-        holder.itemView.setOnClickListener() {
-            val intent = Intent(context, DetailDataGhazalActivity::class.java)
-            intent.putExtra("id", quote.id)
-            intent.putExtra("author", quote.author)
-            intent.putExtra("title", quote.title)
-            intent.putExtra("quote", quote.quote)
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(context, DetailDataGhazalActivity::class.java).apply {
+                putExtra("id", quote.id)
+                putExtra("author", quote.author)
+                putExtra("title", quote.title)
+                putExtra("quote", quote.quote)
+            }
             context.startActivity(intent)
-
         }
-
-
     }
 
-    override fun getItemCount(): Int {
-        // Return the item count (currently returning 0)
-        Log.d("MyApp", quotes.size.toString())
-        return quotes.size // Return the total number of quotes
-    }
+    override fun getItemCount(): Int = quotes.size
 
-    inner class ViewHolder(val binding: FavquoteItemviewBinding) :
-        RecyclerView.ViewHolder(binding.root)
-
+    inner class ViewHolder(val binding: FavquoteItemviewBinding) : RecyclerView.ViewHolder(binding.root)
 }

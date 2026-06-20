@@ -1,8 +1,8 @@
 package com.example.ghazalapp
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.ghazalapp.adapter.FavquoteAdapterr
@@ -11,35 +11,58 @@ import com.example.ghazalapp.quotesData.Quote
 import io.paperdb.Paper
 
 class FavoriteQuoteActivity : AppCompatActivity() {
-    lateinit var binding: ActivityFavoriteQuoteBinding
-    private lateinit var quoteAdapterr1: FavquoteAdapterr // Or your custom adapter like QuoteAdapter
-    private var addfavList: ArrayList<Quote> = ArrayList()
+    private lateinit var binding: ActivityFavoriteQuoteBinding
+    private lateinit var quoteAdapterr1: FavquoteAdapterr
+    private var favList: ArrayList<Quote> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+            View.SYSTEM_UI_FLAG_FULLSCREEN
+        )
+        
         binding = ActivityFavoriteQuoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
         binding.favouriteList.layoutManager = LinearLayoutManager(this)
         Paper.init(this)
 
+        binding.backArrow.setOnClickListener {
+            onBackPressed()
+        }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        loadFavorites()
+    }
 
-//// Read the favorite list from Paper DB
-        val favList: List<Quote> = Paper.book().read("favorite") ?: emptyList()
-//// If the list is null, you can use an empty list as a fallback
-        Log.d("TAGhyfav", "onCreate: $favList")
-        quoteAdapterr1 = FavquoteAdapterr(favList, this@FavoriteQuoteActivity)
+    private fun loadFavorites() {
+        // Read the favorite list from Paper DB
+        val list: List<Quote> = Paper.book().read("favorite") ?: emptyList()
+        favList.clear()
+        favList.addAll(list)
+        
+        quoteAdapterr1 = FavquoteAdapterr(favList, this@FavoriteQuoteActivity) {
+            // Callback when an item is removed
+            loadFavorites()
+        }
         binding.favouriteList.adapter = quoteAdapterr1
 
-        if (quoteAdapterr1.itemCount == 0) {
-            Log.d("TAGhyfav", "onCreate: ${quoteAdapterr1.itemCount}")
-            binding.emptyFavIv.visibility = View.VISIBLE
-            binding.emptyFav.visibility = View.VISIBLE
+        // Toggle visibility of the entire empty state container
+        if (favList.isEmpty()) {
+            binding.emptyLayout.visibility = View.VISIBLE
+            binding.favouriteList.visibility = View.GONE
         } else {
-            binding.emptyFavIv.visibility = View.GONE
-            binding.emptyFav.visibility = View.GONE
+            binding.emptyLayout.visibility = View.GONE
+            binding.favouriteList.visibility = View.VISIBLE
         }
-
-
     }
 }

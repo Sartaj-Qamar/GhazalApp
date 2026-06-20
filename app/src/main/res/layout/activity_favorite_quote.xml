@@ -32,14 +32,17 @@
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_20ssp" />
+
             <ImageView
                 android:id="@+id/back_arrow"
-                android:layout_width="@dimen/_13sdp"
-                android:layout_height="@dimen/_13sdp"
-  android:layout_marginTop="@dimen/_25sdp"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:src="@drawable/arrow_back_ios"
-                android:background="@drawable/ripple_bottom"/>
-
+                android:padding="@dimen/_2sdp"
+                android:background="@drawable/ripple_bottom"
+                android:contentDescription="Back" />
 
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
@@ -47,20 +50,22 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favourite_list"
         android:layout_width="match_parent"
-
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_fav" />
 
+    <!-- Added ID: empty_layout -->
     <LinearLayout
+        android:id="@+id/empty_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-
         android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_fav">
 
@@ -79,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/_10sdp"
-            android:text="ابھی تک کوئی پسندیدہ نہیں ہی"
+            android:text="ابھی تک کوئی پسندیدہ نہیں ہے"
             tools:ignore="HardcodedText" />
 
     </LinearLayout>

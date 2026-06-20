@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="false"
     tools:context=".FetchDataCategoryActivity"
     android:background="@color/background_color">
 
@@ -26,30 +27,49 @@
                 android:text="پی ڈی ایف  فائل"
                 style="@style/maintext"
                 android:gravity="center"
-
                 android:textColor="@color/white"
                 android:textSize="@dimen/_20ssp" />
 
             <ImageView
                 android:id="@+id/back_arrow"
-                android:layout_width="@dimen/_15sdp"
-                android:layout_height="@dimen/_12sdp"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/ripple_bottom"
-                android:src="@drawable/arrow_back_ios" />
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/arrow_back_ios"
+                android:contentDescription="Back" />
 
 
         </RelativeLayout>
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/detail_tittle_list"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
-        tools:itemCount="1"
-        android:layout_marginStart="@dimen/_5sdp"
-        android:layout_marginEnd="@dimen/_5sdp"
-        tools:listitem="@layout/pdf_fileview" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/detail_tittle_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_5sdp"
+            tools:itemCount="1"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            tools:listitem="@layout/pdf_fileview" />
+
+        <TextView
+            android:id="@+id/no_pdf_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="پی ڈی ایف فائل نہیں ہے"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_18ssp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </FrameLayout>
 
 </LinearLayout>

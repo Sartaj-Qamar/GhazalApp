@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:fitsSystemWindows="false">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -33,11 +34,14 @@
 
             <ImageView
                 android:id="@+id/back_arrow"
-                android:layout_width="@dimen/_13sdp"
-                android:layout_height="@dimen/_13sdp"
-android:layout_marginTop="@dimen/_20sdp"
+                android:layout_width="@dimen/_24sdp"
+                android:layout_height="@dimen/_24sdp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/ripple_bottom"
-                android:src="@drawable/arrow_back_ios" />
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/arrow_back_ios"
+                android:contentDescription="Back" />
 
             <ImageView
                 android:id="@+id/downloadimg"
@@ -234,4 +238,3 @@ android:layout_marginTop="@dimen/_20sdp"
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
